@@ -1,0 +1,49 @@
+var fhDataList = [
+    {
+        "id": "fh1-1",
+        "title": "FH1-1",
+        "publishTime": "2021",
+        "poster": "",
+        "fhClassfyId": "fh1",
+        "description": "FH1-1",
+        "links":[
+            {"link": "magnet:?xt=urn:btih:yza567", "title": "Link1", "size":"12GB"},
+            {"link": "magnet:?xt=urn:btih:yza567", "title": "Link2", "size":"15GB"},
+            {"link": "magnet:?xt=urn:btih:yza567", "title": "Link3", "size":"18GB"}
+        ],
+        "belongSeriesId": [1, 2],
+        "actorsId": []
+
+    },
+    {
+        "id": "fh1-2",
+        "title": "FH1-2",
+        "publishTime": "2021",
+        "poster": "",
+        "fhClassfyId": "fh1",
+        "description": "FH1-2",
+        "links":[
+            {"link": "magnet:?xt=urn:btih:yza567", "title": "Link1", "size":"12GB"},
+            {"link": "magnet:?xt=urn:btih:yza567", "title": "Link2", "size":"15GB"},
+            {"link": "magnet:?xt=urn:btih:yza567", "title": "Link3", "size":"18GB"}
+        ],
+        "belongSeriesId": [1, 2],
+        "actorsId": []
+    },
+    {
+        "id": "fh1-3",
+        "title": "FH1-3",
+        "publishTime": "2021",
+        "poster": "",
+        "fhClassfyId": "fh1",
+        "description": "FH1-3",
+        "links":[
+            {"link": "magnet:?xt=urn:btih:yza567", "title": "Link1", "size":"12GB"},
+            {"link": "magnet:?xt=urn:btih:yza567", "title": "Link2", "size":"15GB"},
+            {"link": "magnet:?xt=urn:btih:yza567", "title": "Link3", "size":"18GB"}
+        ],
+        "belongSeriesId": [1, 2],
+        "actorsId": []
+
+    }
+];
