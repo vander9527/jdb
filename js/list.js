@@ -12,46 +12,38 @@ $(document).ready(function() {
     loadCategoryContent();
 
     function preloadIndexedData() {
-        const actorsCat = categories.find(cat => cat.id === 'ACTORS');
-        const seriesCat = categories.find(cat => cat.id === 'SERIES');
+        // 遍历所有分类，缓存所有 type=indexed 的数据
+        categories.forEach(cat => {
+            if (cat.type === 'indexed' && cat.dataFile && cat.indexFile) {
+                const cachedData = localStorage.getItem(`${cat.id}_data`);
+                const cachedIndex = localStorage.getItem(`${cat.id}_index`);
 
-        if (actorsCat && actorsCat.type === 'indexed') {
-            const cachedData = localStorage.getItem('ACTORS_data');
-            const cachedIndex = localStorage.getItem('ACTORS_index');
+                if (cachedData && cachedIndex) {
+                    // 从缓存恢复
+                    const data = JSON.parse(cachedData);
+                    if (cat.id === 'ACTORS') {
+                        window.actorsList = data;
+                    } else if (cat.id === 'SERIES') {
+                        window.seriesList = data;
+                    }
+                } else {
+                    // 加载并缓存数据文件
+                    $.getJSON(`data/${cat.dataFile}`, function(data) {
+                        if (cat.id === 'ACTORS') {
+                            window.actorsList = data;
+                        } else if (cat.id === 'SERIES') {
+                            window.seriesList = data;
+                        }
+                        localStorage.setItem(`${cat.id}_data`, JSON.stringify(data));
+                    });
 
-            if (cachedData && cachedIndex) {
-                window.actorsList = JSON.parse(cachedData);
-            } else {
-                // 加载并缓存
-                $.getJSON(`data/${actorsCat.dataFile}`, function(data) {
-                    window.actorsList = data;
-                    localStorage.setItem('ACTORS_data', JSON.stringify(data));
-                });
-
-                $.getJSON(`data/${actorsCat.indexFile}`, function(indexData) {
-                    localStorage.setItem('ACTORS_index', JSON.stringify(indexData));
-                });
+                    // 加载并缓存索引文件
+                    $.getJSON(`data/${cat.indexFile}`, function(indexData) {
+                        localStorage.setItem(`${cat.id}_index`, JSON.stringify(indexData));
+                    });
+                }
             }
-        }
-
-        if (seriesCat && seriesCat.type === 'indexed') {
-            const cachedData = localStorage.getItem('SERIES_data');
-            const cachedIndex = localStorage.getItem('SERIES_index');
-
-            if (cachedData && cachedIndex) {
-                window.seriesList = JSON.parse(cachedData);
-            } else {
-                // 加载并缓存
-                $.getJSON(`data/${seriesCat.dataFile}`, function(data) {
-                    window.seriesList = data;
-                    localStorage.setItem('SERIES_data', JSON.stringify(data));
-                });
-
-                $.getJSON(`data/${seriesCat.indexFile}`, function(indexData) {
-                    localStorage.setItem('SERIES_index', JSON.stringify(indexData));
-                });
-            }
-        }
+        });
     }
     
     function renderSidebar() {
