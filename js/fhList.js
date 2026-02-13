@@ -1,7 +1,8 @@
 $(document).ready(function() {
-    // 获取URL中的fhId参数
+    // 获取URL中的fhId和dataFile参数
     const urlParams = new URLSearchParams(window.location.search);
     const fhId = urlParams.get('fhId');
+    const dataFile = urlParams.get('dataFile');
     
     if (!fhId) {
         $('.main-content').html('<div class="empty-state">参数错误</div>');
@@ -42,14 +43,11 @@ $(document).ready(function() {
     function loadFhContent() {
         let html = '';
         
-        // 动态加载对应的FH数据文件
-        const fileName = fhId + 'Data';
-        const dataPath = `data/fhDatas/${fileName}.js`;
+        // 从URL参数获取数据文件路径
+        const dataPath = `data/${dataFile}`;
         
-        // 清除旧的FH数据
-        delete window.fhDataList;
-        
-        $.getScript(dataPath, function() {
+        $.getJSON(dataPath, function(data) {
+            window.fhDataList = data;
             renderContent();
         }).fail(function() {
             html = '<div class="empty-state">数据加载失败</div>';
@@ -124,7 +122,7 @@ $(document).ready(function() {
     function initMediaItemHandlers() {
         $('.media-item').on('click', function() {
             const id = $(this).data('id');
-            window.location.href = 'detail.html?id=' + id;
+            window.location.href = 'detail.html?id=' + id + '&dataFile=' + encodeURIComponent(dataFile);
         });
     }
     

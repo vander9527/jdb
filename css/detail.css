@@ -293,6 +293,18 @@ img {
     color: #999;
 }
 
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #333;
+    color: #fff;
+    padding: 15px 25px;
+    border-radius: 4px;
+    z-index: 9999;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
 @media (max-width: 992px) {
     .detail-row {
         grid-template-columns: 1fr;

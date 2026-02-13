@@ -1,73 +1,86 @@
 $(document).ready(function() {
     const urlParams = new URLSearchParams(window.location.search);
     const mediaId = urlParams.get('id');
+    const dataFile = urlParams.get('dataFile');
     let currentLinkPage = 1;
     let linkPageSize = 10;
-    
+
     if (!mediaId) {
         $('.container').html('<div class="empty-state">未找到资源</div>');
         return;
     }
-    
-    loadFhDetail(mediaId);
-    
-    function loadFhDetail(id) {
-        // 提取fhId（如 fh1-1 -> fh1）
-        const match = id.match(/^(fh\d+)/);
-        if (!match) {
-            $('.container').html('<div class="empty-state">参数错误</div>');
-            return;
-        }
-        
-        const fhId = match[1];
-        const fileName = fhId + 'Data';
-        const dataPath = `data/fhDatas/${fileName}.js`;
-        
-        $.getScript(dataPath, function() {
-            renderFhDetail(id);
+
+    loadFhDetail(mediaId, dataFile);
+
+    function loadFhDetail(id, dataFile) {
+        // 从dataFile加载对应的JSON数据
+        const dataPath = `data/${dataFile}`;
+
+        $.getJSON(dataPath, function(data) {
+            const fhData = data.find(item => item.id === id);
+
+            if (!fhData) {
+                $('.container').html('<div class="empty-state">未找到资源</div>');
+                return;
+            }
+
+            // 从全局变量加载系列和演员数据
+            loadRelatedData(fhData);
         }).fail(function() {
             $('.container').html('<div class="empty-state">数据加载失败</div>');
         });
     }
-    
-    function renderFhDetail(id) {
-        const fhData = window.fhDataList.find(item => item.id === id);
-        
-        if (!fhData) {
-            $('.container').html('<div class="empty-state">未找到资源</div>');
+
+    function loadRelatedData(fhData) {
+        // 优先从全局变量获取
+        let seriesList = window.seriesList;
+        let actorsList = window.actorsList;
+
+        // 如果全局变量不存在，从localStorage获取
+        if (!seriesList) {
+            const cachedSeries = localStorage.getItem('SERIES_data');
+            if (cachedSeries) {
+                seriesList = JSON.parse(cachedSeries);
+                window.seriesList = seriesList;
+            }
+        }
+
+        if (!actorsList) {
+            const cachedActors = localStorage.getItem('ACTORS_data');
+            if (cachedActors) {
+                actorsList = JSON.parse(cachedActors);
+                window.actorsList = actorsList;
+            }
+        }
+
+        // 如果仍然没有数据，显示错误和返回主页按钮
+        if (!seriesList || !actorsList) {
+            renderDetailWithEmpty(fhData);
             return;
         }
-        
-        // 加载系列和演员数据
-        loadRelatedData(fhData);
+
+        // 获取所属系列名称
+        const seriesNames = (fhData.belongSeriesId || []).map(seriesId => {
+            const series = seriesList.find(s => s.id === seriesId);
+            return series ? series.title : '';
+        }).filter(name => name !== '');
+
+        // 获取演员名称
+        const actorNames = (fhData.actorsId || []).map(actorId => {
+            const actor = actorsList.find(a => a.id === actorId);
+            return actor ? actor.title : '';
+        }).filter(name => name !== '');
+
+        renderDetail(fhData, seriesNames, actorNames);
     }
-    
-    function loadRelatedData(fhData) {
+
+    function renderDetailWithEmpty(fhData) {
         let html = '';
-        
-        // 加载系列列表
-        $.getScript('data/categories/SeriesListData.js', function() {
-            const seriesList = window.categoriesList || [];
-            
-            // 加载演员列表
-            $.getScript('data/categories/ActorsListData.js', function() {
-                const actorsList = window.categoriesList || [];
-                
-                // 获取所属系列名称
-                const seriesNames = (fhData.belongSeriesId || []).map(seriesId => {
-                    const series = seriesList.find(s => s.id === seriesId);
-                    return series ? series.title : '';
-                }).filter(name => name !== '');
-                
-                // 获取演员名称
-                const actorNames = (fhData.actorsId || []).map(actorId => {
-                    const actor = actorsList.find(a => a.id === actorId);
-                    return actor ? actor.title : '';
-                }).filter(name => name !== '');
-                
-                renderDetail(fhData, seriesNames, actorNames);
-            });
-        });
+        html += '<div class="header">';
+        html += `<a href="index.html" class="back-link">&larr; 返回首页</a>`;
+        html += '</div>';
+        html += '<div class="empty-state">未获取到数据，请先访问主页</div>';
+        $('.container').html(html);
     }
     
     function renderDetail(fhData, seriesNames, actorNames) {

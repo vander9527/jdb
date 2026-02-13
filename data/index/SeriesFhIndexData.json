@@ -1,0 +1,14 @@
+[
+    {
+        "seriesId": 1,
+        "fhId": ["ADN-1","ADN-3","ADN-1"]
+    },
+    {
+        "seriesId": 2,
+        "fhId": ["fh2-1","ADN-5"]
+    },
+    {
+        "seriesId": 3,
+        "fhId": []
+    }
+]

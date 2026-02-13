@@ -1,0 +1,10 @@
+[
+    {
+        "actorId": 1,
+        "fhId": ["ADN-1","ADN-3","ADN-1"]
+    },
+    {
+        "actorId": 2,
+        "fhId": ["ADN-2","fh2-2"]
+    }
+]

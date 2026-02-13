@@ -50,29 +50,42 @@ $(document).ready(function() {
     
     function loadIndexData() {
         let html = '';
-        
-        // 使用type参数构建索引数据文件名: actorFhIndexData.js, seriesFhIndexData.js
-        const indexFileName = type.charAt(0).toUpperCase() + type.slice(1).toLowerCase() + 'FhIndexData';
-        const indexPath = `data/index/${indexFileName}.js`;
-        
-        $.getScript(indexPath, function() {
+
+        // 优先从localStorage获取索引数据
+        const cachedIndex = localStorage.getItem(`${categoryId}_index`);
+        const cachedData = localStorage.getItem(`${categoryId}_data`);
+
+        if (cachedIndex && cachedData) {
+            window.indexData = JSON.parse(cachedIndex);
+            // 恢复全局变量
+            if (categoryId === 'ACTORS') {
+                window.actorsList = JSON.parse(cachedData);
+            } else if (categoryId === 'SERIES') {
+                window.seriesList = JSON.parse(cachedData);
+            }
             loadFhData();
-        }).fail(function() {
-            html = '<div class="empty-state">索引数据加载失败</div>';
-            $('.main-content').html(html);
-        });
+            return;
+        }
+
+        // localStorage中没有数据，提示返回主页
+        html = `
+            <div class="empty-state">
+                未获取到数据
+                <br>
+                <a href="index.html" class="back-link">← 返回主页</a>
+            </div>
+        `;
+        $('.main-content').html(html);
     }
     
     function loadFhData() {
-        // 获取索引数据变量名（使用type参数）
-        const indexVarName = type.charAt(0).toLowerCase() + type.slice(1).toLowerCase() + 'FhIndexData';
-        const indexData = window[indexVarName];
-        
+        const indexData = window.indexData;
+
         if (!indexData) {
             $('.main-content').html('<div class="empty-state">索引数据不存在</div>');
             return;
         }
-        
+
         // 根据itemId查找对应的fhId列表
         const indexItem = indexData.find(item => {
             if (type === 'actor') {
@@ -82,68 +95,63 @@ $(document).ready(function() {
             }
             return false;
         });
-        
+
         if (!indexItem || !indexItem.fhId || indexItem.fhId.length === 0) {
             $('.main-content').html('<div class="empty-state">暂无关联数据</div>');
             return;
         }
-        
-        // 从fhId中提取fh数据标识（如fh1-1 -> fh1）
-        const fhIds = [...new Set(indexItem.fhId.map(fhId => {
-            const match = fhId.match(/^(fh\d+)/);
-            return match ? match[1] : null;
-        }).filter(id => id !== null))];
-        
-        if (fhIds.length === 0) {
+
+        // 从fhId（格式为"文件名-编号"，如"ADN-1"）中提取文件名部分
+        const fileNames = [...new Set(indexItem.fhId.map(fhId => {
+            const parts = fhId.split('-');
+            return parts.length > 1 ? parts[0] : fhId;
+        }))];
+
+        if (fileNames.length === 0) {
             $('.main-content').html('<div class="empty-state">暂无关联数据</div>');
             return;
         }
-        
-        // 动态加载所有FH数据文件
+
+        // 动态加载所有FH数据文件（从fhDatas目录加载对应的JSON文件）
         let loadedCount = 0;
         let allFhData = [];
-        
-        // 清除旧的FH数据
-        delete window.fhDataList;
-        
-        fhIds.forEach(fhId => {
-            const fileName = fhId + 'Data';
-            const dataPath = `data/fhDatas/${fileName}.js`;
-            
-            $.getScript(dataPath, function() {
-                // 合并数据
-                if (window.fhDataList) {
-                    allFhData = allFhData.concat(window.fhDataList);
-                    delete window.fhDataList;
-                }
-                
-                loadedCount++;
-                
-                // 所有数据加载完成后渲染
-                if (loadedCount === fhIds.length) {
-                    renderContent(allFhData);
-                }
-            }).fail(function() {
-                loadedCount++;
-                if (loadedCount === fhIds.length) {
-                    renderContent(allFhData);
-                }
+
+            fileNames.forEach(fileName => {
+                const dataPath = `data/fhDatas/${fileName}.json`;
+
+                $.getJSON(dataPath, function(data) {
+                    // 合并数据
+                    allFhData = allFhData.concat(data);
+
+                    loadedCount++;
+
+                    // 所有数据加载完成后渲染
+                    if (loadedCount === fileNames.length) {
+                        // 保存文件名列表到全局变量
+                        window.indexedFileNames = fileNames;
+                        renderContent(allFhData, fileNames);
+                    }
+                }).fail(function() {
+                    loadedCount++;
+                    if (loadedCount === fileNames.length) {
+                        window.indexedFileNames = fileNames;
+                        renderContent(allFhData, fileNames);
+                    }
+                });
             });
-        });
     }
     
-    function renderContent(fhDataList) {
+    function renderContent(fhDataList, fileNames) {
         let html = '';
-        
+
         if (!fhDataList || fhDataList.length === 0) {
             html = '<div class="empty-state">暂无数据</div>';
             $('.main-content').html(html);
             return;
         }
-        
+
         // 过滤数据，只显示索引中包含的fhId
-        const indexVarName = type.charAt(0).toLowerCase() + type.slice(1).toLowerCase() + 'FhIndexData';
-        const indexData = window[indexVarName];
+        const indexData = window.indexData;
         const indexItem = indexData.find(item => {
             if (type === 'actor') {
                 return item.actorId == itemId;
@@ -152,7 +160,7 @@ $(document).ready(function() {
             }
             return false;
         });
-        
+
         const validFhIds = indexItem.fhId;
         const filteredData = fhDataList.filter(item => validFhIds.includes(item.id));
         
@@ -214,7 +222,13 @@ $(document).ready(function() {
     function initMediaItemHandlers() {
         $('.media-item').on('click', function() {
             const id = $(this).data('id');
-            window.location.href = 'detail.html?id=' + id;
+            // 从全局变量获取文件名列表
+            const fileNames = window.indexedFileNames || [];
+            // 根据id的前缀（如"ADN-1"中的"ADN"）找到对应的文件名
+            const prefixMatch = id.match(/^([^-]+)-/);
+            const fileName = prefixMatch ? prefixMatch[1] : id.split('-')[0];
+            const dataFile = `fhDatas/${fileName}.json`;
+            window.location.href = 'detail.html?id=' + id + '&dataFile=' + encodeURIComponent(dataFile);
         });
     }
     
