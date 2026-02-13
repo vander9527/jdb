@@ -3,7 +3,7 @@ var categories = [
             id: 'FH',
             name: 'FH',
             type:"base",
-            dataFile:"categories/FHListData.json"
+            dataFile:"categories/FhListData.json"
         },
         {
             id: 'ACTORS',
