@@ -90,7 +90,7 @@ $(document).ready(function() {
         // 左侧：海报和基本信息
         html += '<div class="detail-section poster-section">';
         html += '<div class="poster-wrapper">';
-        html += `<img src="${fhData.poster}" alt="${fhData.title}">`;
+        html += `<img src="${fhData.poster}" alt="${fhData.title}" referrerpolicy="no-referrer" style="object-fit: contain;"> `;
         html += '</div>';
         html += '<div class="poster-info">';
         html += `<div class="detail-title">${fhData.title}</div>`;

@@ -181,7 +181,7 @@ $(document).ready(function() {
                 html += `
                     <div class="media-item" data-id="${item.id}" data-trans-title="${item.transTitle}">
                         <div class="media-poster">
-                            <img src="${item.poster}" alt="${item.title}">
+                            <img src="${item.poster}" alt="${item.title}" referrerpolicy="no-referrer" style="object-fit: contain;">
                         </div>
                         <div class="media-info">
                             <div class="media-title">${item.title}(${item.links.length})</div>
