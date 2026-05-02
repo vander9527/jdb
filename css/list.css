@@ -247,6 +247,247 @@ img {
     color: #333;
 }
 
+.refresh-btn {
+    padding: 8px 16px;
+    border: 1px solid #e0e0e0;
+    background: #fff;
+    color: #666;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.refresh-btn:hover {
+    border-color: #4a90d9;
+    color: #4a90d9;
+    background: #f0f7ff;
+}
+
+.refresh-btn:active {
+    transform: scale(0.98);
+}
+
+.refresh-btn:hover .refresh-icon {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.copy-btn {
+    padding: 8px 16px;
+    border: 1px solid #e0e0e0;
+    background: #fff;
+    color: #666;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.copy-btn:hover {
+    border-color: #67c23a;
+    color: #67c23a;
+    background: #f0f9eb;
+}
+
+.copy-btn:active {
+    transform: scale(0.98);
+}
+
+.copy-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.copy-modal {
+    background: #fff;
+    border-radius: 8px;
+    width: 360px;
+    max-height: 400px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: modalFadeIn 0.2s ease;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.copy-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #eee;
+    background: #fafafa;
+}
+
+.copy-modal-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.copy-modal-close {
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    color: #999;
+    font-size: 1.5rem;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.copy-modal-close:hover {
+    background: #eee;
+    color: #666;
+}
+
+.copy-modal-body {
+    padding: 16px;
+    max-height: 420px;
+    overflow-y: auto;
+}
+
+.batch-size-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #eee;
+}
+
+.batch-size-label {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.batch-size-options {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.batch-size-radio {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.batch-size-radio input[type="radio"] {
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+    accent-color: #4a90d9;
+}
+
+.batch-size-radio:hover {
+    color: #333;
+}
+
+.batch-list-container {
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+.batch-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.batch-item {
+    padding: 10px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.batch-item:hover {
+    border-color: #4a90d9;
+    color: #4a90d9;
+    background: #f0f7ff;
+}
+
+.batch-item.copied {
+    background: #e8f5e9;
+    border-color: #81c784;
+    color: #2e7d32;
+}
+
+.batch-item.copied:hover {
+    background: #c8e6c9;
+    border-color: #66bb6a;
+}
+
+/* Toast 提示 */
+.toast-container {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2000;
+}
+
+.toast {
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .content-grid {
     display: grid;
     gap: 15px;

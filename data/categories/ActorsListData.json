@@ -1,47 +1,11 @@
-[
-    {
-        "id": 1,
-        "type": "actor",
-        "title": "actor1",
-        "year": "2021",
-        "description": "",
-        "poster": "",
-        "total": 0
-    },
-    {
-        "id": 2,
-        "type": "actor",
-        "title": "actor2",
-        "year": "2021",
-        "description": "",
-        "poster": "",
-        "total": 0
-    },
-    {
-        "id": 3,
-        "type": "actor",
-        "title": "actor3",
-        "year": "2021",
-        "description": "",
-        "poster": "",
-        "total": 0
-    },
-    {
-        "id": 4,
-        "type": "actor",
-        "title": "actor4",
-        "year": "2021",
-        "description": "",
-        "poster": "",
-        "total": 0
-    },
-    {
-        "id": 5,
-        "type": "actor",
-        "title": "actor5",
-        "year": "2021",
-        "description": "",
-        "poster": "",
-        "total": 0
-    }
-]
+[ {
+  "id" : 1,
+  "type" : "actor",
+  "title" : "神宫寺奈绪",
+  "ogTitle" : "神宮寺ナオ",
+  "transTitle" : "JinguJiTemple",
+  "year" : "1997",
+  "description" : "",
+  "poster" : "https://bkimg.cdn.bcebos.com/pic/f9dcd100baa1cd11728b557d2340dffcc3cec3fd8716",
+  "total" : 42
+} ]

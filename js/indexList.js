@@ -179,18 +179,18 @@ $(document).ready(function() {
         pageData.forEach(item => {
             if (currentView === 'grid') {
                 html += `
-                    <div class="media-item" data-id="${item.id}">
+                    <div class="media-item" data-id="${item.id}" data-trans-title="${item.transTitle}">
                         <div class="media-poster">
                             <img src="${item.poster}" alt="${item.title}">
                         </div>
                         <div class="media-info">
-                            <div class="media-title">${item.title}</div>
+                            <div class="media-title">${item.title}(${item.links.length})</div>
                         </div>
                     </div>
                 `;
             } else {
                 html += `
-                    <div class="media-item list-view" data-id="${item.id}">
+                    <div class="media-item list-view" data-id="${item.id}" data-trans-title="${item.transTitle}">
                         <div class="media-info">
                             <div class="media-title">${item.title}</div>
                             <div class="media-meta">

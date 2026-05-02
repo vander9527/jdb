@@ -9,7 +9,7 @@ $(document).ready(function() {
         return;
     }
     
-    let currentView = 'grid';
+    let currentView = localStorage.getItem('currentView') || 'grid';
     let currentPage = 1;
     let pageSize = 20;
     
@@ -67,7 +67,34 @@ $(document).ready(function() {
             html += '<div class="view-toggle">';
             html += `<button class="view-btn ${currentView === 'grid' ? 'active' : ''}" data-view="grid">▦</button>`;
             html += `<button class="view-btn ${currentView === 'list' ? 'active' : ''}" data-view="list">☰</button>`;
-            html += '</div></div>';
+            html += '</div>';
+            html += '<button class="copy-btn" id="copyBtn">📋 复制批次</button>';
+            html += '</div>';
+            
+            // 复制弹窗
+            html += `
+            <div class="copy-modal-overlay" id="copyModalOverlay">
+                <div class="copy-modal">
+                    <div class="copy-modal-header">
+                        <span class="copy-modal-title">选择批次</span>
+                        <button class="copy-modal-close" id="copyModalClose">×</button>
+                    </div>
+                    <div class="copy-modal-body">
+                        <div class="batch-size-section">
+                            <span class="batch-size-label">批次大小：</span>
+                            <div class="batch-size-options">
+                                ${generateBatchSizeOptions()}
+                            </div>
+                        </div>
+                        <div class="batch-list-container">
+                            <div class="batch-list" id="batchList">
+                                ${generateBatchList(fhDataList.length)}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
             
             const totalPages = Math.ceil(fhDataList.length / pageSize);
             const start = (currentPage - 1) * pageSize;
@@ -108,13 +135,137 @@ $(document).ready(function() {
             
             $('.main-content').html(html);
             initViewToggle();
+            initCopyButton();
             initMediaItemHandlers();
         }
+    }
+    
+    function generateBatchSizeOptions() {
+        const sizes = [20, 50, 100, 150, 200];
+        let html = '';
+        
+        sizes.forEach(size => {
+            const checked = size === 20 ? 'checked' : '';
+            html += `
+                <label class="batch-size-radio">
+                    <input type="radio" name="batchSize" value="${size}" ${checked}>
+                    <span>${size}</span>
+                </label>
+            `;
+        });
+        
+        return html;
+    }
+    
+    function generateBatchList(total, batchSize = 20) {
+        const totalBatches = Math.ceil(total / batchSize);
+        let html = '';
+        
+        for (let i = 1; i <= totalBatches; i++) {
+            const start = (i - 1) * batchSize + 1;
+            const end = Math.min(i * batchSize, total);
+            html += `<div class="batch-item" data-start="${start}" data-end="${end}">${start}-${end}</div>`;
+        }
+        
+        return html;
+    }
+    
+    function initCopyButton() {
+        $('#copyBtn').on('click', function() {
+            $('#copyModalOverlay').css('display', 'flex');
+        });
+        
+        $('#copyModalClose').on('click', function() {
+            $('#copyModalOverlay').hide();
+        });
+        
+        $('#copyModalOverlay').on('click', function(e) {
+            if (e.target === this) {
+                $(this).hide();
+            }
+        });
+        
+        // 批次大小变化时动态更新批次列表
+        $('input[name="batchSize"]').on('change', function() {
+            const batchSize = parseInt($(this).val());
+            const total = window.fhDataList.length;
+            $('#batchList').html(generateBatchList(total, batchSize));
+            
+            // 重新绑定点击事件
+            $('.batch-item').off('click').on('click', handleBatchItemClick);
+        });
+        
+        $('.batch-item').on('click', handleBatchItemClick);
+        
+        function handleBatchItemClick() {
+            const $this = $(this);
+            const start = $this.data('start');
+            const end = $this.data('end');
+            
+            // 获取批次范围内的数据
+            const batchData = window.fhDataList.slice(start - 1, end);
+            
+            // 提取链接
+            const links = batchData.map(item => {
+                if (item.links && item.links.length > 0) {
+                    // 查找 isDefault 为 true 的链接
+                    const defaultLink = item.links.find(link => link.isDefault === true);
+                    if (defaultLink && defaultLink.link) {
+                        return defaultLink.link;
+                    }
+                    // 如果没有 isDefault 为 true 的，取第一个
+                    return item.links[0].link;
+                }
+                return '';
+            }).filter(link => link);
+            
+            // 复制到剪贴板
+            if (links.length > 0) {
+                const textToCopy = links.join('\n');
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    $this.addClass('copied');
+                    showToast(`批次 ${start}-${end} 已复制 (${links.length}条)`);
+                    console.log(`复制批次: ${start}-${end}, 链接数: ${links.length}`);
+                }).catch(err => {
+                    console.error('复制失败:', err);
+                    showToast('复制失败，请重试');
+                });
+            } else {
+                showToast('该批次没有可用链接');
+            }
+        }
+    }
+    
+    function showToast(message) {
+        // 移除已存在的toast
+        $('.toast-container').remove();
+        
+        // 创建新toast
+        const toast = $(`
+            <div class="toast-container">
+                <div class="toast">${message}</div>
+            </div>
+        `);
+        $('body').append(toast);
+        
+        // 显示toast
+        setTimeout(() => {
+            $('.toast').addClass('show');
+        }, 10);
+        
+        // 3秒后隐藏并移除
+        setTimeout(() => {
+            $('.toast').removeClass('show');
+            setTimeout(() => {
+                $('.toast-container').remove();
+            }, 300);
+        }, 3000);
     }
     
     function initViewToggle() {
         $('.view-btn').on('click', function() {
             currentView = $(this).data('view');
+            localStorage.setItem('currentView', currentView);
             loadFhContent();
         });
     }
@@ -122,7 +273,7 @@ $(document).ready(function() {
     function initMediaItemHandlers() {
         $('.media-item').on('click', function() {
             const id = $(this).data('id');
-            window.location.href = 'detail.html?id=' + id + '&dataFile=' + encodeURIComponent(dataFile);
+            window.location.href = 'fhDetail.html?id=' + id + '&dataFile=' + encodeURIComponent(dataFile);
         });
     }
     

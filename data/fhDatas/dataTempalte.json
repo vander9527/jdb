@@ -1,18 +1,15 @@
 [
     {
-        "id": "fh1-1",
-        "title": "FH1-1",
-        "publishTime": "2021",
+        "id": "1",
+        "title": "匹配到的标题（matchedTitle）可以作为唯一标识",
+        "publishTime": "",
         "poster": "",
-        "fhClassfyId": "fh1",
-        "description": "FH1-1",
+        "fhClassfyId": "matchedTitle 纯字母部分，大写",
+        "description": "链接中的原始标题",
         "links":[
-            {"link": "magnet:?xt=urn:btih:yza567", "title": "Link1", "size":"12GB"},
-            {"link": "magnet:?xt=urn:btih:yza567", "title": "Link2", "size":"15GB"},
-            {"link": "magnet:?xt=urn:btih:yza567", "title": "Link3", "size":"18GB"}
+            {"link": "纯磁力链接，不包含其余非必要部分", "title": "链接中的原始标题", "size":""}
         ],
-        "belongSeriesId": [1, 2],
+        "belongSeriesId": [],
         "actorsId": []
-
     }
 ]

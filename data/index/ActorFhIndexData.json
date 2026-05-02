@@ -1,10 +1,3 @@
-[
-    {
-        "actorId": 1,
-        "fhId": ["ADN-1","ADN-3","ADN-1"]
-    },
-    {
-        "actorId": 2,
-        "fhId": ["ADN-2","fh2-2"]
-    }
-]
+{
+  "JinguJiTemple" : [ "JUL-969", "JUL-388", "CAWD-941", "JUR-645", "JUR-554", "JUR-477", "JUR-444", "JUR-322", "JUR-186", "JUQ-876", "JUQ-530", "JUQ-458", "JUQ-201", "JUQ-272", "JUQ-223", "JUQ-150", "JUQ-131", "JUQ-098", "JUQ-980", "FWAY-062", "ACHJ-005", "MIDV-980", "MIDV-816", "MIDV-746", "MIDV-615", "MIDV-522", "MIDV-494", "MIDV-465", "MIDV-435", "MIDV-407", "MIDV-288", "MIDV-270", "MIDV-212", "MIDV-125", "MIDV-103", "MIDA-436", "MIDA-356", "MIDA-271", "MIDA-202", "MIDA-150", "MIDA-112", "MIDA-037" ]
+}
