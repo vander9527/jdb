@@ -13,7 +13,6 @@ $(document).ready(function() {
     loadFhDetail(mediaId, dataFile);
 
     function loadFhDetail(id, dataFile) {
-        // 从dataFile加载对应的JSON数据
         const dataPath = `data/${dataFile}`;
 
         $.getJSON(dataPath, function(data) {
@@ -24,7 +23,6 @@ $(document).ready(function() {
                 return;
             }
 
-            // 从全局变量加载系列和演员数据
             loadRelatedData(fhData);
         }).fail(function() {
             $('.container').html('<div class="empty-state">数据加载失败</div>');
@@ -32,11 +30,9 @@ $(document).ready(function() {
     }
 
     function loadRelatedData(fhData) {
-        // 优先从全局变量获取
         let seriesList = window.seriesList;
         let actorsList = window.actorsList;
 
-        // 如果全局变量不存在，从localStorage获取
         if (!seriesList) {
             const cachedSeries = localStorage.getItem('SERIES_data');
             if (cachedSeries) {
@@ -53,25 +49,22 @@ $(document).ready(function() {
             }
         }
 
-        // 如果仍然没有数据，显示错误和返回主页按钮
         if (!seriesList || !actorsList) {
             renderDetailWithEmpty(fhData);
             return;
         }
 
-        // 获取所属系列名称
-        const seriesNames = (fhData.belongSeriesId || []).map(seriesId => {
-            const series = seriesList.find(s => s.id === seriesId);
-            return series ? series.title : '';
-        }).filter(name => name !== '');
+        // 获取所属系列完整对象
+        const seriesItems = (fhData.belongSeriesId || []).map(seriesId => {
+            return seriesList.find(s => s.id === seriesId);
+        }).filter(item => item);
 
-        // 获取演员名称
-        const actorNames = (fhData.actorsId || []).map(actorId => {
-            const actor = actorsList.find(a => a.id === actorId);
-            return actor ? actor.title : '';
-        }).filter(name => name !== '');
+        // 获取演员完整对象
+        const actorItems = (fhData.actorsId || []).map(actorId => {
+            return actorsList.find(a => a.id === actorId);
+        }).filter(item => item);
 
-        renderDetail(fhData, seriesNames, actorNames);
+        renderDetail(fhData, seriesItems, actorItems);
     }
 
     function renderDetailWithEmpty(fhData) {
@@ -82,19 +75,18 @@ $(document).ready(function() {
         html += '<div class="empty-state">未获取到数据，请先访问主页</div>';
         $('.container').html(html);
     }
-    
-    function renderDetail(fhData, seriesNames, actorNames) {
+
+    function renderDetail(fhData, seriesItems, actorItems) {
         let html = '';
-        
+
         html += '<div class="header">';
         html += `<a href="index.html" class="back-link">&larr; 返回首页</a>`;
         html += '</div>';
-        
+
         html += '<div class="detail-layout">';
-        
-        // 上方：左侧海报信息 + 右侧系列/演员信息
+
         html += '<div class="detail-row">';
-        
+
         // 左侧：海报和基本信息
         html += '<div class="detail-section poster-section">';
         html += '<div class="poster-wrapper">';
@@ -103,54 +95,52 @@ $(document).ready(function() {
         html += '<div class="poster-info">';
         html += `<div class="detail-title">${fhData.title}</div>`;
         html += '<div class="detail-meta">';
-        html += `<div class="meta-row"><span class="meta-label">发布时间</span><span class="meta-value">${fhData.publishTime}</span></div>`;
-        html += `<div class="meta-row"><span class="meta-label">描述</span><span class="meta-value">${fhData.description}</span></div>`;
+        html += `<div class="meta-row"><span class="meta-label">发布时间：</span><span class="meta-value">${fhData.publishTime}</span></div>`;
+
+        // 演员列表（可点击）
+        if (actorItems.length > 0) {
+            html += `<div class="meta-row"><span class="meta-label">演员：</span><span class="meta-value actor-list">`;
+            actorItems.forEach((actor, index) => {
+                html += `<a class="actor-link" href="indexedDetail.html?type=actor&categoryId=ACTORS&id=${actor.id}">${actor.title}</a>`;
+                if (index < actorItems.length - 1) {
+                    html += '，';
+                }
+            });
+            html += '</span></div>';
+        }
+
+        html += `<div class="meta-row"><span class="meta-label">描述：</span><span class="meta-value">${fhData.description || '-'}</span></div>`;
         html += '</div>';
         html += '</div>';
         html += '</div>';
-        
-        // 右侧：系列和演员
+
+        // 右侧：所属系列
         html += '<div class="detail-section info-section">';
-        
-        // 系列信息
         html += '<div class="info-block">';
         html += '<h4>所属系列</h4>';
-        if (seriesNames.length > 0) {
-            seriesNames.forEach(name => {
-                html += `<div class="info-tag">${name}</div>`;
+        if (seriesItems.length > 0) {
+            seriesItems.forEach(series => {
+                html += `<a class="info-tag series-link" href="indexedDetail.html?type=series&categoryId=SERIES&id=${series.id}">${series.title}</a>`;
             });
         } else {
             html += '<div class="empty-info">暂无系列信息</div>';
         }
         html += '</div>';
-        
-        // 演员信息
-        html += '<div class="info-block">';
-        html += '<h4>演员列表</h4>';
-        if (actorNames.length > 0) {
-            actorNames.forEach(name => {
-                html += `<div class="info-tag">${name}</div>`;
-            });
-        } else {
-            html += '<div class="empty-info">暂无演员信息</div>';
-        }
         html += '</div>';
-        
+
         html += '</div>';
-        
-        html += '</div>';
-        
-        // 下方：链接列表（宽度与上方总宽度一致）
+
+        // 下方：链接列表
         html += '<div class="detail-section resource-section full-width">';
         html += '<h3>下载资源</h3>';
         html += '<div class="resource-list">';
-        
+
         const links = fhData.links || [];
         const totalLinkPages = Math.ceil(links.length / linkPageSize);
         const start = (currentLinkPage - 1) * linkPageSize;
         const end = Math.min(start + linkPageSize, links.length);
         const pageLinks = links.slice(start, end);
-        
+
         if (links.length === 0) {
             html += '<div class="empty-state">暂无资源</div>';
         } else {
@@ -165,26 +155,26 @@ $(document).ready(function() {
                 `;
             });
         }
-        
+
         html += '</div>';
-        
+
         if (totalLinkPages > 1) {
             html += renderLinkPagination(totalLinkPages);
         }
         html += '</div>';
-        
+
         html += '</div>';
-        
+
         $('.container').html(html);
         initCopyHandlers();
     }
-    
+
     function renderLinkPagination(totalPages) {
         let html = '<div class="pagination">';
-        
+
         html += `<button class="page-btn" ${currentLinkPage === 1 ? 'disabled' : ''} data-lpage="1">首页</button>`;
         html += `<button class="page-btn" ${currentLinkPage === 1 ? 'disabled' : ''} data-lpage="${currentLinkPage - 1}">上一页</button>`;
-        
+
         for (let i = 1; i <= totalPages; i++) {
             if (i === 1 || i === totalPages || (i >= currentLinkPage - 1 && i <= currentLinkPage + 1)) {
                 html += `<button class="page-btn ${i === currentLinkPage ? 'active' : ''}" data-lpage="${i}">${i}</button>`;
@@ -192,21 +182,21 @@ $(document).ready(function() {
                 html += '<span class="page-ellipsis">...</span>';
             }
         }
-        
+
         html += `<button class="page-btn" ${currentLinkPage === totalPages ? 'disabled' : ''} data-lpage="${currentLinkPage + 1}">下一页</button>`;
         html += `<button class="page-btn" ${currentLinkPage === totalPages ? 'disabled' : ''} data-lpage="${totalPages}">末页</button>`;
         html += '</div>';
-        
+
         return html;
     }
-    
+
     function initCopyHandlers() {
         $('.resource-copy').on('click', function() {
             const link = $(this).data('link');
             copyToClipboard(link);
         });
     }
-    
+
     function copyToClipboard(text) {
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(text).then(function() {
@@ -218,7 +208,7 @@ $(document).ready(function() {
             fallbackCopy(text);
         }
     }
-    
+
     function fallbackCopy(text) {
         const textarea = document.createElement('textarea');
         textarea.value = text;
@@ -226,31 +216,31 @@ $(document).ready(function() {
         textarea.style.left = '-999999px';
         document.body.appendChild(textarea);
         textarea.select();
-        
+
         try {
             document.execCommand('copy');
             showNotification('复制成功！');
         } catch (err) {
             showNotification('复制失败，请手动复制');
         }
-        
+
         document.body.removeChild(textarea);
     }
-    
+
     function showNotification(message) {
         const notification = $(`
             <div class="notification">${message}</div>
         `);
-        
+
         $('body').append(notification);
-        
+
         setTimeout(function() {
             notification.fadeOut(300, function() {
                 notification.remove();
             });
         }, 2000);
     }
-    
+
     $(document).on('click', '.page-btn:not(:disabled)', function() {
         if ($(this).data('lpage')) {
             currentLinkPage = $(this).data('lpage');

@@ -142,6 +142,87 @@ img {
     border-bottom: 2px solid #f0f0f0;
 }
 
+.indexed-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.indexed-item {
+    background: #f8f8f8;
+    border-radius: 6px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    border: 1px solid transparent;
+}
+
+.indexed-item:hover {
+    background: #f0f0f0;
+    border-color: #ddd;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.indexed-title {
+    font-size: 0.9rem;
+    color: #333;
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    word-break: break-all;
+}
+
+.indexed-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 15px;
+}
+
+.indexed-card {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.indexed-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.indexed-poster {
+    position: relative;
+    padding-top: 130%;
+    background: #ddd;
+    overflow: hidden;
+}
+
+.indexed-poster img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.indexed-card-title {
+    padding: 10px;
+    font-size: 0.85rem;
+    color: #333;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .resource-list {
     max-height: 600px;
     overflow-y: auto;
@@ -305,6 +386,37 @@ img {
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
+.empty-info {
+    color: #999;
+    font-size: 0.9rem;
+}
+
+.actor-link {
+    color: #0066cc;
+    transition: color 0.2s;
+}
+
+.actor-link:hover {
+    color: #004499;
+    text-decoration: underline;
+}
+
+.series-link {
+    display: inline-block;
+    padding: 4px 12px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: #333;
+    transition: all 0.2s;
+    margin: 2px;
+}
+
+.series-link:hover {
+    background: #333;
+    color: #fff;
+}
+
 @media (max-width: 992px) {
     .detail-row {
         grid-template-columns: 1fr;
@@ -355,5 +467,15 @@ img {
     .resource-copy {
         margin-left: 0;
         width: 100%;
+    }
+
+    .indexed-list {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+    }
+
+    .indexed-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
     }
 }

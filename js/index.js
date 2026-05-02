@@ -261,9 +261,9 @@ $(document).ready(function() {
                 const dataFile = item ? item.dataFile : '';
                 window.location.href = 'fhList.html?fhId=' + id + '&dataFile=' + encodeURIComponent(dataFile);
             }
-            // 如果是indexed类型分类，跳转到索引列表页，传递type参数
+            // 如果是indexed类型分类，跳转到索引详情页，传递type参数
             else if (currentCat && currentCat.type === 'indexed') {
-                window.location.href = 'indexList.html?type=' + type + '&categoryId=' + currentCategory + '&id=' + id;
+                window.location.href = 'indexedDetail.html?type=' + type + '&categoryId=' + currentCategory + '&id=' + id;
             }
             // 其他情况跳转到详情页
             else {

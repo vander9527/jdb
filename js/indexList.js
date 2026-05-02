@@ -222,13 +222,11 @@ $(document).ready(function() {
     function initMediaItemHandlers() {
         $('.media-item').on('click', function() {
             const id = $(this).data('id');
-            // 从全局变量获取文件名列表
-            const fileNames = window.indexedFileNames || [];
             // 根据id的前缀（如"ADN-1"中的"ADN"）找到对应的文件名
             const prefixMatch = id.match(/^([^-]+)-/);
             const fileName = prefixMatch ? prefixMatch[1] : id.split('-')[0];
             const dataFile = `fhDatas/${fileName}.json`;
-            window.location.href = 'detail.html?id=' + id + '&dataFile=' + encodeURIComponent(dataFile);
+            window.location.href = 'fhDetail.html?id=' + id + '&dataFile=' + encodeURIComponent(dataFile);
         });
     }
     
